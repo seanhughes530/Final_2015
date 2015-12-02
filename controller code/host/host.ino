@@ -26,10 +26,10 @@ void RFduinoGZLL_onReceive(device_t device, int rssi, char *data, int len){
     mydata = String(data);
     P1 = mydata.substring(1,15);
 
-    Serial.print("Player1: ");
+    Serial.print("P1:");
     Serial.println(P1);
   } else {
-    Serial.print("Player2: ");
+    Serial.print("P2:");
     Serial.println(data);
   }
 
