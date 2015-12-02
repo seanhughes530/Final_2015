@@ -30,10 +30,30 @@ port.open(function(error) {
   } else { 
     console.log('Serial open'); 
     port.on('data', function(data) { 
-      console.log(data);
+      //console.log(data);
+
+      var result = String(data[1]);
+
+      if(result == 1){
+        var strdata = String(data);
+        var myData = strdata.substring(3,7) + " " + strdata.substring(7,11);
+
+        var sdata = myData.split(" ");
+        socket.emit('toScreen', {p1x: sdata[0], p1y: sdata[1]})
+        console.log(sdata);
+      } else {
+        var strdata = String(data);
+        var myData = strdata.substring(3,7) + " " + strdata.substring(7,11);
+
+        var sdata = myData.split(" ");
+        socket.emit('toScreen', {p2x: sdata[0], p2y: sdata[1]})
+        console.log(sdata);
+      }
+
+
       //result = data.split(',') // split data using "," as delimiter in to result array
-      result[3] // index 3 of results array
-      socket.emit('toScreen', { r: result[1], g: result[2], b: result[3] }); // emit with socket communication a javascript object named "toScreen" with contents key:value pairs for index [1],[2],[3] of result array   
+      //result[3] // index 3 of results array
+      //socket.emit('toScreen', { r: result[1], g: result[2], b: result[3] }); // emit with socket communication a javascript object named "toScreen" with contents key:value pairs for index [1],[2],[3] of result array   
     });
 }
 });
