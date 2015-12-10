@@ -1,21 +1,33 @@
+//socket
 var socket;
-var url='192.168.1.139';
+var url='192.168.1.125';
 var port=8000
 
+//incoming data 
 var p1horiz;
 var p1vert;
 
 var p2horiz;
 var p2vert;
 
+//background
 var back;
 
+//coords of players 
 var c1X, c1Y, c2X, c2Y, cW, cH;
 var m1X, m1Y, m2X, m2Y;
 
 //class for collisions
 var objective = [];
 var obX, obY, obW, obH;
+
+//bools for changing color
+var color = false;
+
+//bool for starting
+var start = false;
+//y coord for text
+var tY;
 
 
 socket = io.connect(url+':'+port);
@@ -31,21 +43,23 @@ socket.on('toScreen', function (data) {
 
 
 function setup(){
-	createCanvas(1000,500);
-	back = 0;
+	createCanvas(windowWidth,windowHeight);
+	back = 255;
 
-	c1X = 400;
-	c1Y = 250;
-	c2X = 600;
-	c2Y = 250;
+	c1X = windowWidth/3;
+	c1Y = windowHeight/2;
+	c2X = 2*windowWidth/3;
+	c2Y = windowHeight/2;
 	
 	cW = 20;
 	cH = 20;
 
+	tY = windowHeight/3;
+
 	////class stuff
 	for (var i=0; i<6; i++) {
     	objective.push(new circle());
-    	console.log("pushed");
+    	//console.log("pushed");
   	}
 
 }
@@ -53,21 +67,46 @@ function setup(){
 function draw(){
 	background(back);
 
-	P1movement();
-	P2movement();
 
+	////////makes circles that you have to make contact with///////
 	for (var i=0; i<6; i++) {
     	objective[i].display();
   	}
 
+
+  	/////starting prompt///////
+	s = "Both players must make contact at the same time with each empty circle in order to make a connection. But remember, no talking allowed!";
+	fill(177,177,177);
+	textAlign(CENTER);
+	textSize(30);
+	text(s, windowWidth/4, tY, windowWidth/2, 100); 
+
+
+  	///////collision,key pressed event, and color change/////////
   	points();
+  	keyReleased();
+
+  	colorChange(color);
+
+  	///////waits for space bar to be hit to begin game/////////
+	if (start){
+		P1movement(color);
+		P2movement(color);
+	}
 
 }
 
 
+function keyReleased(){
+	if(keyCode === 32){
+		start = true;
+		tY = 11000;
+
+	}
+}
 
 
-function P1movement(){
+function P1movement(_color){
 	if(isNaN(p1horiz)){
 	}else{
 		m1X = map(p1horiz,0,1021,10,-10.1811);
@@ -86,11 +125,21 @@ function P1movement(){
 
 
 	}	
-		fill(255);
-		ellipse(c1X, c1Y, cW, cH);	
+
+	console.log(_color);
+	//color change 
+	if(_color == true){
+		fill(0);
+	} else if (_color == false) {
+		fill(0,255,255);
+	}
+	//fill(0,255,255);
+
+	noStroke();
+	ellipse(c1X, c1Y, cW, cH);	
 }
 
-function P2movement(){
+function P2movement(_color){
 	if(isNaN(p2horiz)){
 	}else{
 		m2X = map(p2vert,0,1021,10,-10.1811);
@@ -113,17 +162,25 @@ function P2movement(){
 	// console.log(c2X);
 	// console.log(m2X);
 	// console.log(c2Y);
-	// console.log(m2Y);	
-		fill(255);
-		ellipse(c2X, c2Y, cW, cH);
+	// console.log(m2Y);
+
+	//color change	
+	if(_color == true){
+		fill(0);
+	} else if (_color == false) {
+		fill(255,0,255);
+	}
+	//fill(255,0,255);
+
+	ellipse(c2X, c2Y, cW, cH);
 }
 
 
 //objective circles
 function circle(){
 
-	obX = random(100,900);
-	obY = random(50,450);
+	obX = random(0,windowWidth);
+	obY = random(0,windowHeight);
 	obW = 60;
 	obH = 60;
 
@@ -131,9 +188,10 @@ function circle(){
 	console.log(obY);
 
 	this.display = function(){
-		fill(0,0,255);
+		fill(255);
+		stroke(0);
 		ellipse(obX, obY, obW, obH);
-	}
+	};
 }
 
 
@@ -151,6 +209,16 @@ function points(){
 }
 
 
+function colorChange(_color){
+	if( (c1X >= (c2X - 150)) && (c1X <= (c2X + 150))){
+		if( (c1Y >= (c2Y - 150)) && (c1Y <= (c2Y + 150))){
+			color = true;
+		}
+	} else{
+		color = false;
+	}
+	return color;
+}
 
 
 
