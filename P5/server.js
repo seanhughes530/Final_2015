@@ -39,14 +39,14 @@ port.open(function(error) {
         var myData = strdata.substring(3,7) + " " + strdata.substring(7,11);
 
         var sdata = myData.split(" ");
-        socket.emit('toScreen', {p1x: sdata[0], p1y: sdata[1]})
+        socket.emit('toScreen1', {p1x: sdata[0], p1y: sdata[1]})
         console.log(sdata);
       } else {
         var strdata = String(data);
         var myData = strdata.substring(3,7) + " " + strdata.substring(7,11);
 
         var sdata = myData.split(" ");
-        socket.emit('toScreen', {p2x: sdata[0], p2y: sdata[1]})
+        socket.emit('toScreen2', {p2x: sdata[0], p2y: sdata[1]})
         console.log(sdata);
       }
 

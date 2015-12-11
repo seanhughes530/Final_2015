@@ -20,6 +20,8 @@ var m1X, m1Y, m2X, m2Y;
 //class for collisions
 var objective = [];
 var obX, obY, obW, obH;
+var f;  //color of objective circles
+var distance1, distance2;
 
 //bools for changing color
 var color = false;
@@ -31,13 +33,21 @@ var tY;
 
 
 socket = io.connect(url+':'+port);
-socket.on('toScreen', function (data) {
+socket.on('toScreen1', function (data) {
 	p1horiz = float(data.p1x);
 	p1vert = float(data.p1y);
 
+});
+
+socket.on('toScreen2', function (data) {
 	p2horiz = float(data.p2y);
 	p2vert = float(data.p2x);
+
 });
+
+
+
+
 
 
 
@@ -56,20 +66,23 @@ function setup(){
 
 	tY = windowHeight/3;
 
+	f = (255);
+
 	////class stuff
-	for (var i=0; i<6; i++) {
+	for (var i=0; i<4; i++) {
     	objective.push(new circle());
     	//console.log("pushed");
   	}
 
 }
 
+
 function draw(){
 	background(back);
 
 
 	////////makes circles that you have to make contact with///////
-	for (var i=0; i<6; i++) {
+	for (var i=0; i<4; i++) {
     	objective[i].display();
   	}
 
@@ -79,11 +92,12 @@ function draw(){
 	fill(177,177,177);
 	textAlign(CENTER);
 	textSize(30);
+	noStroke();
 	text(s, windowWidth/4, tY, windowWidth/2, 100); 
 
 
   	///////collision,key pressed event, and color change/////////
-  	points();
+  	//points();
   	keyReleased();
 
   	colorChange(color);
@@ -95,6 +109,13 @@ function draw(){
 	}
 
 }
+
+
+
+
+
+
+
 
 
 function keyReleased(){
@@ -122,22 +143,19 @@ function P1movement(_color){
 		c1X += m1X;
 		c1Y += m1Y;
 
-
-
 	}	
 
-	console.log(_color);
 	//color change 
 	if(_color == true){
 		fill(0);
 	} else if (_color == false) {
 		fill(0,255,255);
 	}
-	//fill(0,255,255);
 
 	noStroke();
 	ellipse(c1X, c1Y, cW, cH);	
 }
+
 
 function P2movement(_color){
 	if(isNaN(p2horiz)){
@@ -154,15 +172,7 @@ function P2movement(_color){
 
 		c2X += m2X;
 		c2Y += m2Y;
-
-
-
 	}
-
-	// console.log(c2X);
-	// console.log(m2X);
-	// console.log(c2Y);
-	// console.log(m2Y);
 
 	//color change	
 	if(_color == true){
@@ -170,7 +180,6 @@ function P2movement(_color){
 	} else if (_color == false) {
 		fill(255,0,255);
 	}
-	//fill(255,0,255);
 
 	ellipse(c2X, c2Y, cW, cH);
 }
@@ -179,45 +188,66 @@ function P2movement(_color){
 //objective circles
 function circle(){
 
-	obX = random(0,windowWidth);
-	obY = random(0,windowHeight);
-	obW = 60;
-	obH = 60;
-
-	console.log(obX);
-	console.log(obY);
+	this.obX = random(0,windowWidth);
+	this.obY = random(0,windowHeight);
+	this.obW = 60;
+	this.obH = 60;
 
 	this.display = function(){
-		fill(255);
+
+		distance1 = dist(this.obX, this.obY, c1X, c1Y);
+		distance2 = dist(this.obX, this.obY, c2X, c2Y);
+
+		points(distance1,distance2);
+
+		//console.log(f);
+
+		fill(f);
 		stroke(0);
-		ellipse(obX, obY, obW, obH);
+		ellipse(this.obX, this.obY, this.obW, this.obH);
+
+		// console.log(distance1);
+		// console.log(distance2);
+		// if((distance1 <= (this.obW/2)) && (distance2 <= (this.obW/2))){
+		// 	console.log("touch");
+		// 	f = 177;
+		// 	//return _f;
+		// }
+
 	};
+
 }
 
 
 //collision
-function points(){
-	if ( (c1X >= (obX-(obW/2))) && (c1X <= (obX+(obW/2))) ){  //player1 x-val inside obj x-val 
-		if ( (c2X >= (obX-(obW/2))) && (c2X <= (obX+(obW/2))) ){  //player2 x-val inside obj x-val
-			if ( (c1Y >= (obY-(obH/2))) && (c1Y <= (obY+(obH/2))) ){  //player 1 y-val inside obj y-val
-				if ( (c1Y >= (obY-(obH/2))) && (c1Y <= (obY+(obH/2))) ){  //player 2 y-val inside obj y-val
-					console.log("touch");
-				}
-			}
-		}
+function points(d1,d2){
+	// var distance1 = dist(this.obX, this.obY, c1X, c1Y);
+	// var distance2 = dist(this.obX, this.obY, c2X, c2Y);
+
+	// console.log(d1);
+	// console.log(d2);
+
+	if((d1 <= (this.obW/2)) && (d2 <= (this.obW/2))){
+		console.log("touch");
+		//f = 177;
+		//return _f;
 	}
+
+	//console.log(_f);
+
 }
 
 
 function colorChange(_color){
-	if( (c1X >= (c2X - 150)) && (c1X <= (c2X + 150))){
-		if( (c1Y >= (c2Y - 150)) && (c1Y <= (c2Y + 150))){
-			color = true;
-		}
-	} else{
+	var distance = dist(c1X, c1Y, c2X, c2Y);
+
+	if(distance <= 150){
+		color = true;
+	} else {
 		color = false;
 	}
 	return color;
+
 }
 
 
