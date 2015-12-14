@@ -1,6 +1,6 @@
 //socket
 var socket;
-var url='192.168.1.125';
+var url='192.168.1.102';
 var port=8000
 
 //incoming data 
@@ -56,10 +56,10 @@ function setup(){
 	createCanvas(windowWidth,windowHeight);
 	back = 255;
 
-	c1X = windowWidth/3;
-	c1Y = windowHeight/2;
-	c2X = 2*windowWidth/3;
-	c2Y = windowHeight/2;
+	c1X = random(0,windowWidth/3);
+	c1Y = random(windowHeight);
+	c2X = random(2*windowWidth/3, windowWidth);
+	c2Y = random(windowHeight);
 	
 	cW = 20;
 	cH = 20;
@@ -88,11 +88,10 @@ function draw(){
 
 
   	/////starting prompt///////
-	s = "Both players must make contact at the same time with each empty circle in order to make a connection. But remember, no talking allowed!";
+	s = "Both players must make contact with each circle at the same time in order to make a connection. But remember, no talking allowed!";
 	fill(177,177,177);
 	textAlign(CENTER);
 	textSize(30);
-	noStroke();
 	text(s, windowWidth/4, tY, windowWidth/2, 100); 
 
 
@@ -130,8 +129,8 @@ function keyReleased(){
 function P1movement(_color){
 	if(isNaN(p1horiz)){
 	}else{
-		m1X = map(p1horiz,0,1021,10,-10.1811);
-		m1Y = map(p1vert,0,1021,10,-10.1811);
+		m1X = map(p1horiz,0,1021,5,-5.1811);
+		m1Y = map(p1vert,0,1021,5,-5.1811);
 
 		if ((m1X > -1) && (m1X < 0)){
 			m1X = 0;
@@ -192,27 +191,28 @@ function circle(){
 	this.obY = random(0,windowHeight);
 	this.obW = 60;
 	this.obH = 60;
+	this.f = 255;
 
 	this.display = function(){
 
 		distance1 = dist(this.obX, this.obY, c1X, c1Y);
 		distance2 = dist(this.obX, this.obY, c2X, c2Y);
 
-		points(distance1,distance2);
+		//points(distance1,distance2);
 
 		//console.log(f);
 
-		fill(f);
+		fill(this.f);
 		stroke(0);
 		ellipse(this.obX, this.obY, this.obW, this.obH);
 
 		// console.log(distance1);
 		// console.log(distance2);
-		// if((distance1 <= (this.obW/2)) && (distance2 <= (this.obW/2))){
-		// 	console.log("touch");
-		// 	f = 177;
-		// 	//return _f;
-		// }
+		if((distance1 <= (this.obW/2)) && (distance2 <= (this.obW/2))){
+			console.log("touch");
+			this.f = 177;
+			//return _f;
+		}
 
 	};
 
@@ -241,7 +241,7 @@ function points(d1,d2){
 function colorChange(_color){
 	var distance = dist(c1X, c1Y, c2X, c2Y);
 
-	if(distance <= 150){
+	if(distance <= 100){
 		color = true;
 	} else {
 		color = false;
