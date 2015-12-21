@@ -1,6 +1,6 @@
 //socket
 var socket;
-var url='192.168.1.102';
+var url='192.168.1.18';
 var port=8000
 
 //incoming data 
@@ -30,6 +30,11 @@ var color = false;
 var start = false;
 //y coord for text
 var tY;
+
+var randomColors;
+var done = false;
+
+
 
 
 socket = io.connect(url+':'+port);
@@ -68,8 +73,14 @@ function setup(){
 
 	f = (255);
 
+
+	rR = random(0,255);
+	rG = random(0,255);
+	rB = random(0,255);
+	randomColors = (rR,rG,rB);
+
 	////class stuff
-	for (var i=0; i<4; i++) {
+	for (var i=0; i<5; i++) {
     	objective.push(new circle());
     	//console.log("pushed");
   	}
@@ -82,21 +93,39 @@ function draw(){
 
 
 	////////makes circles that you have to make contact with///////
-	for (var i=0; i<4; i++) {
+	for (var i=0; i<5; i++) {
     	objective[i].display();
+    	//console.log(objective[0].f);
+
+    	if (objective[0].f == 177 && objective[1].f == 177 && objective[2].f == 177 && objective[3].f == 177 && objective[4].f == 177){
+    		console.log("done!");
+    		done = true;
+    	}
   	}
 
 
   	/////starting prompt///////
 	s = "Both players must make contact with each circle at the same time in order to make a connection. But remember, no talking allowed!";
-	fill(177,177,177);
+	m = "[space to start]"
+	fill(38,206,5);
 	textAlign(CENTER);
 	textSize(30);
-	text(s, windowWidth/4, tY, windowWidth/2, 100); 
+	noStroke();
+	text(s, windowWidth/4, tY, windowWidth/2, 100);
+	text(m, windowWidth/4, tY + 150, windowWidth/2, 100);
+
+
+	if (done){
+		d = "Well Done!"
+		fill(38,206,5);
+		textAlign(CENTER);
+		textSize(100);
+		noStroke();
+		text(d, windowWidth/4, windowHeight/3, windowWidth/2, 100);
+	}  
 
 
   	///////collision,key pressed event, and color change/////////
-  	//points();
   	keyReleased();
 
   	colorChange(color);
@@ -206,34 +235,18 @@ function circle(){
 		stroke(0);
 		ellipse(this.obX, this.obY, this.obW, this.obH);
 
+
 		// console.log(distance1);
 		// console.log(distance2);
 		if((distance1 <= (this.obW/2)) && (distance2 <= (this.obW/2))){
 			console.log("touch");
+
 			this.f = 177;
+
 			//return _f;
 		}
 
 	};
-
-}
-
-
-//collision
-function points(d1,d2){
-	// var distance1 = dist(this.obX, this.obY, c1X, c1Y);
-	// var distance2 = dist(this.obX, this.obY, c2X, c2Y);
-
-	// console.log(d1);
-	// console.log(d2);
-
-	if((d1 <= (this.obW/2)) && (d2 <= (this.obW/2))){
-		console.log("touch");
-		//f = 177;
-		//return _f;
-	}
-
-	//console.log(_f);
 
 }
 
